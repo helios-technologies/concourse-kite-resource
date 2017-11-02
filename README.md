@@ -19,7 +19,7 @@ resources:
       json_key: ((gcp_service_account_key))
 
       # path in repo's root
-      ci_config_path: '.kite'
+      config_path: '.kite'
 
       # next we can have different ways to do what we need
 
