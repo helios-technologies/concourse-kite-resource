@@ -19,3 +19,8 @@ RUN curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | 
 
 # Install Kite
 RUN gem install kite
+
+ADD lib/ /opt/lib
+ADD bin/check /opt/resource/check
+ADD bin/in /opt/resource/in
+ADD bin/out /opt/resource/out

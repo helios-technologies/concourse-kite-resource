@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/util'
+
+cwd = ARGV[0]
+params = Util.params(STDIN.read)
+
+Util.respond(version: { status: 'ok' })

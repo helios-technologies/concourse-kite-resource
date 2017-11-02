@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/util'
+require 'open3'
+
+cwd    = ARGV[0]
+params = Util.params(STDIN.read)
+
+key        = params['source']['json_key']
+kubeconfig = params['source']['kubeconfig']
+
+command = params['params']['command']
+
+# Exit if any config missing
+
+if key.nil? || key.empty?
+  Util.respond(version: { status: 'error' }, metadata: ['Empty key'])
+  exit 1
+end
+
+if kubeconfig.nil? || kubeconfig.empty?
+  Util.respond(version: { status: 'error' }, metadata: ['Empty kubeconfig'])
+  exit 1
+end
+
+if command.nil? || command.empty?
+  Util.respond(version: { status: 'error' }, metadata: ['Empty command'])
+  exit 1
+end
+
+# Prepare files
+
+File.write('/tmp/key.json', key)
+
+home = `echo -n $HOME`
+Dir.mkdir("#{home}/.kube") unless Dir.exist?("#{home}/.kube")
+File.write("#{home}/.kube/config", kubeconfig)
+
+env = { 'GOOGLE_CREDENTIALS' => '/tmp/key.json' }
+
+# Run the command
+
+Util.log("+ #{command}")
+Open3.popen2e(env, command) do |stdin, stdout, wait_thr|
+  Util.log(stdout.read)
+
+  if wait_thr.value.exitstatus.zero?
+    Util.respond(version: { status: 'ok' })
+  else
+    Util.respond(version: { status: 'error' }, metadata: ["Failed to execute command #{command}"])
+  end
+end
