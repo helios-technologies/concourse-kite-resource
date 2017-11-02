@@ -1,5 +1,29 @@
 # concourse-kite-resource
 
+## Usage
+
+```yaml
+resource_types:
+  - name: kite
+    type: docker-image
+    source:
+      repository: heliostech/concourse-kite-resource
+
+resources:
+  - name: kite-test
+    type: kite
+    source:
+      json_key: {{gcp_service_account_key}}
+      kubeconfig: {{k8s_config}}
+
+jobs:
+  - name: test
+    plan:
+      - put: kite-test
+        params:
+          command: 'helm ls'
+```
+
 ## Specs
 
 Resources config example:
